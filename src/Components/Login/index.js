@@ -8,10 +8,14 @@ const Login = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   useEffect(() => {
+    
     {
       isLoggedIn && props.navigation.navigate("Home");
     }
   }, [isLoggedIn]);
+  useEffect(()=>{
+    console.log("Login Component*******")
+  },[])
   const faceBookLogin = async () => {
     try {
       await Facebook.initializeAsync({

@@ -1,36 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import { connect } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+
 import { removeUser } from "../../Store/Action/authAction";
 
 const Home = (props) => {
-    useEffect(()=>{
-        console.log("home*****",props)
+  const isFocused = useIsFocused();
 
-    },[])
+  useEffect(() => {
+    console.log("Home Component*******");
+  }, [isFocused]);
   const [isUser, setIsUser] = useState(true);
-  //   useEffect(() => {
-  //     console.log("useEffect from Home");
-  //     if (!isUser) {
-  //       props.navigation.navigate("Login");
-  //       console.log("Mooved To Login");
-  //     } else {
-  //       props.navigation.navigate("Home");
-  //       console.log("Mooved To Home");
-  //     }
-  //   }, [isUser]);
-    const logout = () => {
-      console.log("logout fun");
-      props.navigation.navigate("Login")
-      props.loggedOut();
-    };
+    useEffect(() => {
+      
+    }, [isUser]);
+  const logout = () => {
+    console.log("logout fun");
+    props.navigation.navigate("Login");
+    props.loggedOut();
+  };
   return (
     <View style={Styles.homeWrapper}>
       <Text>This Is Home Page</Text>
-      <Button
-        title="Logout"
-        onPress={logout }
-      />
+      <Button title="Logout" onPress={logout} />
     </View>
   );
 };
@@ -47,9 +40,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 const mapStateToProps = (state) => {
-    console.log("HOme State",state)
+  console.log("HOme State", state);
   return {
-    userData: state.authReducer
+    userData: state.authReducer,
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
