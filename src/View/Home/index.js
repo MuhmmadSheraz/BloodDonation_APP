@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
+import * as Facebook from "expo-facebook";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import { connect } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-
 import { removeUser } from "../../Store/Action/authAction";
 
 const Home = (props) => {
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
 
-  useEffect(() => {
-    console.log("Home Component*******");
-  }, [isFocused]);
-  const [isUser, setIsUser] = useState(true);
-    useEffect(() => {
-      
-    }, [isUser]);
-  const logout = () => {
+  // useEffect(() => {
+
+  //   console.log("Home Component*******");
+  // }, [isFocused]);
+
+  const facebooklogout = () => {
+    Facebook.logOutAsync();
+    props.loggedOut();
     console.log("logout fun");
     props.navigation.navigate("Login");
-    props.loggedOut();
   };
   return (
     <View style={Styles.homeWrapper}>
       <Text>This Is Home Page</Text>
-      <Button title="Logout" onPress={logout} />
+      <Button title="Logout" onPress={facebooklogout} />
     </View>
   );
 };

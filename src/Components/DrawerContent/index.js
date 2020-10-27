@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import {
   useTheme,
@@ -14,29 +14,41 @@ import {
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { connect } from "react-redux";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export function DrawerContent(props) {
+  const [userData, setUserData] = useState();
   const paperTheme = useTheme();
-
+  useEffect(() => {
+    console.log("Drawer USeEffecr****0", props);
+    setUserData(props.userInfo.user);
+  }, []);
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           {/* User Information************ */}
-          <View style={styles.userInfoSection}>
-            <View style={{ flexDirection: "row", marginTop: 15 }}>
-              <Avatar.Image
-                source={{
-                  uri: "https://api.adorable.io/avatars/50/abott@adorable.png",
-                }}
-                size={50}
-              />
-              <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                <Title style={styles.title}>John Doe</Title>
-                <Caption style={styles.caption}>@j_doe</Caption>
+          {props.userInfo.user && (
+            <View style={styles.userInfoSection}>
+              <View style={{ flexDirection: "row", marginTop: 15 }}>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate("Profile")}
+                >
+                  <Avatar.Image
+                    source={{
+                      uri: props.userInfo.user.profilePicture,
+                    }}
+                    size={50}
+                  />
+                </TouchableOpacity>
+                <View style={{ marginLeft: 15, flexDirection: "column" }}>
+                  <Title style={styles.title}>{props.userInfo.user.userName}</Title>
+                  <Caption style={styles.caption}>@j_doe</Caption>
+                </View>
               </View>
             </View>
-          </View>
+           )} 
           {/* Drawer Content*********** */}
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
@@ -83,7 +95,13 @@ export function DrawerContent(props) {
     </View>
   );
 }
-
+const mapStateToProps = (state) => {
+  console.log("state from Drawer", state);
+  return {
+    userInfo: state.authReducer,
+  };
+};
+export default connect(mapStateToProps, null)(DrawerContent);
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,

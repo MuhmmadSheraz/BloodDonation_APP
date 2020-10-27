@@ -1,21 +1,21 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as Facebook from "expo-facebook";
+import firebase from "firebase";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import {} from "../../Store/Action/authAction";
 import { connect } from "react-redux";
 import { addUser } from "../../Store/Action/authAction";
+import { hello } from "../../Config/firebase";
+
 const Login = (props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
   useEffect(() => {
-    
-    {
-      isLoggedIn && props.navigation.navigate("Home");
+    console.log("Login Rendered")
+    if (props.user.user !== null) {
+      props.navigation.navigate("Home");
+      console.log("props From Login useEffect", props.user.user);
     }
-  }, [isLoggedIn]);
-  useEffect(()=>{
-    console.log("Login Component*******")
-  },[])
+  }, [props.user]);
+
   const faceBookLogin = async () => {
     try {
       await Facebook.initializeAsync({
@@ -28,37 +28,43 @@ const Login = (props) => {
         permissions,
         declinedPermissions,
       } = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ["public_profile"],
+        permissions: ["public_profile", "email"],
       });
-      console.log(
-        "All Params Destructred",
-        type,
-        token,
-        expirationDate,
-        permissions,
-        declinedPermissions
-      );
+      // console.log(
+      //   "All Params Destructred",
+      //   type,
+      //   token,
+      //   expirationDate,
+      //   permissions,
+      //   declinedPermissions
+      // );
 
       //Permission
       if (type === "success") {
-        const responseData = await fetch(
-          `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture.height(500)`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("responseData ==>", data);
-            setIsLoggedIn(true);
-            setUserInfo(data);
-            console.log("props Login ***", props);
-            props.signedInUser(data);
+        const credential = firebase.auth.FacebookAuthProvider.credential(token);
+        // console.log(credential);
+        firebase
+          .auth()
+          .signInWithCredential(credential)
+          .catch((error) => {
+            // console.log("error", error);
           });
+        const responseData = await fetch(
+          `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture`
+        );
+        await responseData.json().then((data) => {
+          console.log("responseData ==>", data);
+          hello(data);
+          // setIsLoggedIn(true);
+          props.signedInUser(data);
+        });
+        // setIsLoggedIn(true);
       } else {
         alert("Permission Cancelled");
       }
     } catch {
       alert("FaceBook Login Failed==>");
     }
-    setIsLoggedIn(true)
   };
 
   return (
@@ -76,7 +82,7 @@ const Login = (props) => {
   );
 };
 const mapStateToProps = (state) => {
-  console.log("StateFormLogin Componenet***", state);
+  console.log("State Login Componenet***", state);
   return {
     user: state.authReducer,
   };
