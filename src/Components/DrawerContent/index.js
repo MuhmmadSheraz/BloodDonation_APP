@@ -37,18 +37,22 @@ export function DrawerContent(props) {
                 >
                   <Avatar.Image
                     source={{
-                      uri: props.userInfo.user.profilePicture,
+                      uri: props.userInfo.user.profilePicture
+                        ? props.userInfo.user.profilePicture
+                        : "https://slcp.lk/wp-content/uploads/2020/02/no-profile-photo.png",
                     }}
                     size={50}
                   />
                 </TouchableOpacity>
                 <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                  <Title style={styles.title}>{props.userInfo.user.userName}</Title>
+                  <Title style={styles.title}>
+                    {props.userInfo.user.userName}
+                  </Title>
                   <Caption style={styles.caption}>@j_doe</Caption>
                 </View>
               </View>
             </View>
-           )} 
+          )}
           {/* Drawer Content*********** */}
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
@@ -73,7 +77,7 @@ export function DrawerContent(props) {
               icon={({ color, size }) => (
                 <Icon name="charity" color={color} size={size} />
               )}
-              label="Charity"
+              label="Donors"
               onPress={() => {
                 props.navigation.navigate("Donors");
               }}
