@@ -9,14 +9,10 @@ import {
   TextInput,
   Button,
   Image,
-  TouchableOpacityBase,
+  TouchableOpacity,
   BackHandler
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
-import {
-  createNativeWrapper,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
 
 const Chat = (props) => {
   const [allChat, setAllChat] = useState([]);
@@ -45,14 +41,11 @@ const Chat = (props) => {
           if (item.data().senderId === userId) {
             getUser(item.data().recieverId)
               .then((e) => {
-                console.log(item.id);
                 let obj = e.data();
                 obj.id = item.id; //Final Object
                 array.push(obj); //Push Into Array
               })
               .then(() => {
-                console.log("Aray Consoling===>", array);
-                console.log("STATE Consoling===>", allChat);
                 setTimeout(() => {
                   setAllChat(array);
                 }, 1000);
@@ -61,14 +54,11 @@ const Chat = (props) => {
           } else if (item.data().recieverId === userId) {
             getUser(item.data().senderId)
               .then((e) => {
-                console.log(item.id);
                 let obj = e.data();
                 obj.id = item.id; //Final Object
                 array.push(obj); //Push Into Array
               })
               .then(() => {
-                console.log("Aray Consoling===>", array);
-                console.log("STATE Consoling===>", allChat);
                 setTimeout(() => {
                   setAllChat(array);
                 }, 1000);
@@ -78,8 +68,6 @@ const Chat = (props) => {
       });
   };
   const startChat = (id, recieverId, userName) => {
-    console.log(id, recieverId);
-    console.log(props);
     props.navigation.navigate("ChatRoom", {
       chatId: id,
       name: userName,
@@ -91,10 +79,10 @@ const Chat = (props) => {
     <View>
       {allChat &&
         allChat.map((item) => {
-          console.log(item);
           return (
             <TouchableOpacity
               onPress={() => startChat(item.id, item.userId, item.userName)}
+              key={item.id}
             >
               <View style={Style.container}>
                 <View style={Style.leftContainer}>
@@ -105,11 +93,11 @@ const Chat = (props) => {
                     style={Style.avatar}
                   />
                   <View style={Style.midContainer}>
-                    <Text style={{ fontWeight: "bold" }}>{item.userName}</Text>
-                    <Text>Kia Haal ha</Text>
+                    <Text style={{ fontSize:18 }}>{item.userName}</Text>
+                  
                   </View>
                 </View>
-                <Text>Yesterday</Text>
+                
               </View>
             </TouchableOpacity>
           );

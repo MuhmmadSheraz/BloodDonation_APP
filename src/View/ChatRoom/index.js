@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ScrollView,
   BackHandler,
+  KeyboardAvoidingView
 } from "react-native";
 import { Container, Header, Content, Picker, Form } from "native-base";
 
@@ -67,9 +68,13 @@ const ChatRoom = ({ navigation, route }) => {
         setChat(chatArray);
       });
   };
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
+
   return (
+
     <View style={Style.container}>
       {/* <Text>Hello Chat</Text> */}
+      <View style={Style.chat_Wrapper}>
       <ScrollView style={Style.scrollView}>
         {chat &&
           chat.map((x) => {
@@ -98,21 +103,22 @@ const ChatRoom = ({ navigation, route }) => {
               </Text>
             );
           })}
-        <View style={Style.wrapper}>
-          <View style={Style.inputWrapper}>
-            <TextInput
-              value={message}
-              placeholder="Enter Your Message..."
-              style={Style.messageInput}
-              onChangeText={(text) => setMessage(text)}
-              required={true}
-            />
-            <View style={Style.buttonSend}>
-              <Icon name="send" size={30} onPress={sendMessageToFirebase} />
-            </View>
+      </ScrollView>
+      </View>
+      <View style={Style.wrapper}>
+        <View style={Style.inputWrapper}>
+          <TextInput
+            value={message}
+            placeholder="Enter Your Message..."
+            style={Style.messageInput}
+            onChangeText={(text) => setMessage(text)}
+            required={true}
+          />
+          <View style={Style.buttonSend}>
+            <Icon name="send" size={30} onPress={sendMessageToFirebase} />
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -121,6 +127,7 @@ export default ChatRoom;
 
 const Style = StyleSheet.create({
   container: {
+    height:"100%",
     width: "100%",
     // flexDirection: "row",
     padding: 10,
@@ -156,11 +163,13 @@ const Style = StyleSheet.create({
     borderRadius: 50,
   },
   wrapper: {
+    height:"30%",
     width: "100%",
     flexDirection: "column-reverse",
-    // padding: 10,
-    // borderRadius: 25,
-    // marginRight: 10,
-    // alignItems: "center",
+    position: "absolute",
+    bottom: 0,
   },
+  chat_Wrapper:{
+    height:"85%"
+  }
 });
