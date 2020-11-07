@@ -1,17 +1,43 @@
 import React, { useEffect, useState } from "react";
 import * as Facebook from "expo-facebook";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  BackHandler,
+  Alert,
+} from "react-native";
 import { connect } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { removeUser } from "../../Store/Action/authAction";
 
 const Home = (props) => {
-  // const isFocused = useIsFocused();
+  const backAction = () => {
+    BackHandler.exitApp();
+    return true;
+  };
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Sabhr Bhai!", "Exit The App?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
 
-  // useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
 
-  //   console.log("Home Component*******");
-  // }, [isFocused]);
+    return () => backHandler.remove();
+  }, [useIsFocused]);
 
   const facebooklogout = () => {
     Facebook.logOutAsync();
@@ -23,6 +49,8 @@ const Home = (props) => {
     <View style={Styles.homeWrapper}>
       <Text>This Is Home Page</Text>
       <Button title="Logout" onPress={facebooklogout} />
+
+      <View style={{ marginVertical: 20 }}></View>
     </View>
   );
 };
@@ -39,7 +67,6 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 const mapStateToProps = (state) => {
-  console.log("HOme State", state);
   return {
     userData: state.authReducer,
   };

@@ -18,12 +18,8 @@ import { connect } from "react-redux";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export function DrawerContent(props) {
-  const [userData, setUserData] = useState();
   const paperTheme = useTheme();
-  useEffect(() => {
-    console.log("Drawer USeEffecr****0", props);
-    setUserData(props.userInfo.user);
-  }, []);
+  
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -70,7 +66,7 @@ export function DrawerContent(props) {
               )}
               label="Chat"
               onPress={() => {
-                props.navigation.navigate("ChatRoom");
+                props.navigation.navigate("Chat");
               }}
             />
             <DrawerItem

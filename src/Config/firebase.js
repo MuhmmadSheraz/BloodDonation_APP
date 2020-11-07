@@ -1,5 +1,6 @@
 import * as firebase from "firebase";
-
+import { createNativeWrapper } from "react-native-gesture-handler";
+import { cos } from "react-native-reanimated";
 const firebaseConfig = {
   apiKey: "AIzaSyDtZSwRW5cwN9JpMfJ2u7XEOy3dcFFcrzg",
   authDomain: "blooddonationapp-d2f79.firebaseapp.com",
@@ -18,7 +19,6 @@ if (!firebase.apps.length) {
 //Functions
 
 const hello = (obj) => {
-  console.log("Hello Function", obj);
   firebase.firestore().collection("user").doc(obj.id).set({
     userId: obj.id,
     userEmail: obj.email,
@@ -26,21 +26,27 @@ const hello = (obj) => {
     profilePicture: obj.picture.data.url,
   });
 };
+
 const updateUser = (obj) => {
-  console.log("object from Firebase", obj);
-  firebase.firestore().collection("user").doc(obj.userId).update({
-    userName: obj.userName,
-    profilePicture: obj.profilePicture,
-    userPhoneNumber: obj.userPhoneNumber,
-    health: obj.health,
-    bloodpicker: obj.bloodpicker,
-    userLocation: obj.userLocation,
-    userId: obj.userId,
-  });
+  firebase
+    .firestore()
+    .collection("user")
+    .doc(obj.userId)
+    .update({
+      userName: obj.userName,
+      profilePicture: obj.profilePicture
+        ? obj.profilePicture
+        : "https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-12.jpg",
+      userPhoneNumber: obj.userPhoneNumber,
+      health: obj.health,
+      bloodpicker: obj.bloodpicker,
+      role: obj.role,
+      userLocation: obj.userLocation,
+      userId: obj.userId,
+    });
 };
 const storageRef = firebase.storage().ref();
 const uploadToFirebase = (blob, userId) => {
-  console.log(blob);
   return new Promise((resolve, reject) => {
     storageRef
       .child(`uploads/${userId}photo.jpg`)
@@ -48,10 +54,7 @@ const uploadToFirebase = (blob, userId) => {
         contentType: "image/jpeg",
       })
       .then((snapshot) => {
-        console.log("snapShot firebase", snapshot);
-
         blob.close();
-        console.log(snapshot);
         resolve(snapshot);
       })
 
@@ -68,4 +71,98 @@ const getImageUrl = async ({ userId }) => {
       return url;
     });
 };
-export { firebase, hello, updateUser, uploadToFirebase, getImageUrl };
+const sigUpWithFirebase = async (userName, email, password, setReducer) => {
+  try {
+    const user = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
+    await firebase.firestore().collection("user").doc(user.user.uid).set({
+      userName: userName,
+      userEmail: email,
+      userId: user.user.uid,
+    });
+    setReducer(user.user.uid);
+  } catch (error) {}
+};
+const sigInWithFirebase = async (email, password) => {
+  try {
+    const user = await firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password);
+
+    return await firebase
+      .firestore()
+      .collection("user")
+      .doc(user.user.uid)
+      .get();
+  } catch (error) {}
+};
+const getUser = (id) => {
+  return firebase.firestore().collection("user").doc(id).get();
+};
+const getAllUsers = async () => {
+  return await firebase.firestore().collection("user").get();
+};
+const joinChatRoom = async (senderId, recieverId) => {
+  let checkRoom = await firebase
+    .firestore()
+    .collection("Chat")
+    .where("senderId", "==", senderId)
+    .where("recieverId", "==", recieverId)
+    .get();
+  let isChatRoomFound = false;
+  checkRoom.forEach((x) => {
+    isChatRoomFound = { ...x.data(), chatId: x.id };
+  });
+  if (isChatRoomFound) return isChatRoomFound;
+  checkRoom = await firebase
+    .firestore()
+    .collection("Chat")
+    .where("senderId", "==", recieverId)
+    .where("recieverId", "==", senderId)
+    .get();
+  isChatRoomFound = false;
+  checkRoom.forEach((x) => {
+    isChatRoomFound = { ...x.data(), chatId: x.id };
+  });
+  if (isChatRoomFound) return isChatRoomFound;
+  return await firebase.firestore().collection("Chat").add({
+    senderId,
+    recieverId,
+  });
+};
+const sendMessage = async (chatId, userId, message, time) => {
+  return await firebase
+    .firestore()
+    .collection("Chat")
+    .doc(chatId)
+    .collection("messages")
+    .add({
+      time: time,
+      userId,
+      message,
+    });
+};
+const renderChat = async (chatId) => {
+  await firebase
+    .firestore()
+    .collection("Chat")
+    .doc(chatId)
+    .collection("message")
+    .get();
+};
+
+export {
+  firebase,
+  hello,
+  updateUser,
+  uploadToFirebase,
+  getImageUrl,
+  sigUpWithFirebase,
+  sigInWithFirebase,
+  getUser,
+  getAllUsers,
+  joinChatRoom,
+  sendMessage,
+  renderChat,
+};

@@ -7,6 +7,8 @@ import Donors from "../View/Donors";
 import ChatRoom from "../View/ChatRoom";
 import Profile from "../View/Profile";
 import Login from "../Components/Login";
+import DonorDetail from "../Components/DonorDetail";
+import Chat from "../Components/Chat";
 import { connect } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -16,24 +18,6 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function StackNavigator(props) {
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // async function toggleAuthAsync() {
-  //   const auth = await Facebook.getAuthenticationCredentialAsync();
-
-  //   if (!auth) {
-  //     console.log("We are Logged In", auth);
-  //     setIsLoggedIn(true);
-  //   } else {
-  //     console.log("We are Logged Out", auth);
-  //     // Log out
-  //     setIsLoggedIn(false);
-  //   }
-  //   console.log("State From Navigation", isLoggedIn);
-  // }
-  // useEffect(() => {
-  //   toggleAuthAsync();
-  // }, [isLoggedIn]);
-
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -47,8 +31,49 @@ function StackNavigator(props) {
       <Stack.Screen
         name="Home"
         component={MainNavigator}
-        screenOptions={{
-          headerShown: false,
+        options={{ title: "My home", headerLeft: null }}
+      />
+      <Stack.Screen
+        name="DonorDetails"
+        component={DonorDetail}
+        options={{ title: "Donors Details" ,
+        headerStyle: {
+          backgroundColor: "#db2924",
+        },
+        headerTintColor: "#fff",}}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
+        options={{ title: "My Chats" ,
+        headerStyle: {
+          backgroundColor: "#db2924",
+        },
+        headerTintColor: "#fff",}}
+      />
+      <Stack.Screen
+        name="Donors"
+        component={Donors}
+        options={{ title: "My Donors" ,
+        headerStyle: {
+          backgroundColor: "#db2924",
+        },
+        headerTintColor: "#fff",}}
+      />
+      <Stack.Screen
+        name="ChatRoom"
+        component={ChatRoom}
+        options={({ route }) => ({ title: route.params.name })}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          title: "Profile",
+          headerStyle: {
+            backgroundColor: "#db2924",
+          },
+          headerTintColor: "#fff",
         }}
       />
     </Stack.Navigator>
@@ -58,15 +83,9 @@ function MainNavigator() {
   return (
     <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Donors" component={Donors} />
-      <Drawer.Screen name="ChatRoom" component={ChatRoom} />
-      <Drawer.Screen
-        name="Profile"
-        component={Profile}
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      {/* <Drawer.Screen name="Donor" component={Donors} />
+      <Drawer.Screen name="ChatRoom" component={Chat} />
+      <Drawer.Screen name="userProfile" component={Profile} /> */}
     </Drawer.Navigator>
   );
 }

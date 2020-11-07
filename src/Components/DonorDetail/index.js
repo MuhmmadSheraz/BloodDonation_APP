@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getUser } from "../../Config/firebase";
-import { View, Text, Image, StyleSheet, Button } from "react-native";
+import { getUser, joinChatRoom } from "../../Config/firebase";
+import { View, Text, Image, StyleSheet, Button, Linking } from "react-native";
 
 const DonorDetails = (props) => {
   const [donorData, setDonorData] = useState([]);
@@ -9,10 +9,25 @@ const DonorDetails = (props) => {
     getDonorDetails();
   }, [props]);
   const getDonorDetails = async () => {
-    console.log(props.route.params.userId);
-    const info = await getUser(props.route.params.userId);
+    console.log(props.route.params.DonorId);
+    const info = await getUser(props.route.params.DonorId);
     console.log("info", info && info.data());
     setDonorData(info && info.data());
+  };
+  const startChat = async () => {
+    // console.log("IDS", props.route.params.DonorId, props.route.params.userId);
+    const firebaseData = await joinChatRoom(
+      props.route.params.userId,
+      props.route.params.DonorId
+    );
+    console.log("ChatdI", firebaseData);
+    props.navigation.navigate("ChatRoom", {
+      chatId: firebaseData.hasOwnProperty("chatId")
+        ? firebaseData.chatId
+        : firebaseData.id,
+      userId: props.route.params.userId,
+      recieverId: props.route.params.DonorId,
+    });
   };
   return (
     <View style={styles.container}>
@@ -43,13 +58,15 @@ const DonorDetails = (props) => {
               {donorData.userPhoneNumber}
             </Text>
             <View style={{ marginVertical: 10 }}>
-              <Button title="Call Now" />
+              <Button
+                title="Call Now"
+                onPress={() =>
+                  Linking.openURL(`tel:${donorData.userPhoneNumber}`)
+                }
+              />
             </View>
             <View>
-              <Button
-                title="Chat Now"
-                onPress={() => props.navigation.navigate("Chat")}
-              />
+              <Button title="Chat Now" onPress={startChat} />
             </View>
           </View>
         </View>

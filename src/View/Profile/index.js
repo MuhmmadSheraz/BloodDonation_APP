@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Image,
+  BackHandler,
+} from "react-native";
 import { Picker } from "@react-native-community/picker";
 import { updateProfile } from "../../Store/Action/authAction";
 import { connect } from "react-redux";
@@ -8,21 +15,25 @@ import {
   uploadToFirebase,
   getImageUrl,
 } from "../../Config/firebase";
+import { Container, Header, Content, Button } from "native-base";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 const Profile = (props) => {
   const [userData, setUserData] = useState();
   const [updateUserData, setUpdateUserData] = useState({});
-  const [userName, setUserName] = useState("");
-  const [image, setImage] = useState("");
+  const [userName, setUserName] = useState(props.userInfo.user.userName);
+  const [image, setImage] = useState(props.userInfo.user.bloodpicker);
   const [imageURL, setImageURL] = useState("");
-  const [userPhoneNumber, setUserPhoneNumber] = useState("");
-  const [bloodpicker, setBloodPicker] = useState("Hello");
+  const [userPhoneNumber, setUserPhoneNumber] = useState(
+    props.userInfo.user.userPhoneNumber
+  );
+  const [bloodpicker, setBloodPicker] = useState("");
   const [health, setHealth] = useState("");
+  const [role, setRole] = useState("");
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -44,16 +55,22 @@ const Profile = (props) => {
       setLocation(location);
     })();
   }, []);
+  const backAction = () => {
+    props.navigation.navigate("Home");
+  };
   useEffect(() => {
-    console.log("props Of Profile", props);
-    console.log("location", location);
-    console.log(props.userInfo.user && userData, location);
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+    return () => {
+      backHandler.remove();
+    };
   }, [props]);
 
   const updateUserDetails = async () => {
     {
-      console.log(props);
-      location && console.log("location from Update Fun", location);
       const ProfileURL = await getImageUrl(props.userInfo.user.userId);
       let updateUserObj = {
         profilePicture:
@@ -62,17 +79,18 @@ const Profile = (props) => {
         userPhoneNumber,
         health,
         bloodpicker,
+        role,
         userLocation: location.coords,
         userId: props.userInfo.user.userId,
       };
-      console.log(ProfileURL);
       setUpdateUserData(updateUserObj);
 
-      setTimeout(() => {
-        updateUser(updateUserObj);
-        props.updateUserAction(updateUserObj);
-      }, 2000);
+      // setTimeout(() => {
+      updateUser(updateUserObj);
+      props.updateUserAction(updateUserObj);
+      // }, 1000);
     }
+    backAction();
   };
 
   // Update Image*************************
@@ -82,7 +100,6 @@ const Profile = (props) => {
 
       xhr.onload = function () {
         // return the blob
-        console.log("XHR Response****", xhr.response);
         resolve(xhr.response);
       };
 
@@ -100,7 +117,6 @@ const Profile = (props) => {
   };
 
   const profileImageUpadte = (props) => {
-    console.log("Profile Update Props", props);
     ImagePicker.launchImageLibraryAsync({
       mediaTypes: "Images",
     })
@@ -115,7 +131,6 @@ const Profile = (props) => {
         return uploadToFirebase(blob, props.userId);
       })
       .then((snapshot) => {
-        console.log("File uploaded");
       })
       .catch((error) => {
         throw error;
@@ -125,14 +140,12 @@ const Profile = (props) => {
   const updateImage = () => {
     const userId = props.userInfo.user.userId;
     profileImageUpadte(userId);
-    console.log("Update Image Done***", props.userInfo.user.userId);
-    console.log(userId);
   };
 
   // Update Image//////////////////////////////*************************
   return (
-    <View style={Styles.profilWrapper}>
-      {props.userInfo.user ? (
+    <ScrollView>
+      <View style={Styles.profilWrapper}>
         <View
           style={{
             textAlign: "center",
@@ -141,21 +154,27 @@ const Profile = (props) => {
             display: "flex",
           }}
         >
-          <TouchableOpacity onPress={updateImage}>
-            <Image
-              style={Styles.tinyLogo}
-              source={{
-                uri: props.userInfo.user.profilePicture,
-              }}
-            />
-          </TouchableOpacity>
+          <View style={Styles.bg}>
+            <TouchableOpacity onPress={updateImage}>
+              <Image
+                style={Styles.tinyLogo}
+                source={{
+                  uri: props.userInfo.user.profilePicture
+                    ? props.userInfo.user.profilePicture
+                    : "https://slcp.lk/wp-content/uploads/2020/02/no-profile-photo.png",
+                }}
+              />
+            </TouchableOpacity>
+          </View>
           <TextInput
             placeholder="Enter Your Name"
             style={Styles.textField}
+            value={userName}
             onChangeText={(text) => setUserName(text)}
           ></TextInput>
           <TextInput
             onChangeText={(text) => setUserPhoneNumber(text)}
+            value={userPhoneNumber}
             placeholder="Enter Your Phone No."
             style={Styles.textField}
           ></TextInput>
@@ -191,25 +210,28 @@ const Profile = (props) => {
             <Picker.Item label="Good" value="Good" />
             <Picker.Item label="Excellent" value="Excellent" />
           </Picker>
-          <Button
-            style={Styles.updateButton}
-            title="Upate Profile"
-            onPress={updateUserDetails}
-          />
+          <Text>Your Role</Text>
+          <Picker
+            selectedValue={role}
+            style={{
+              height: 50,
+              width: 250,
+              borderWidth: 5,
+              borderColor: "black",
+            }}
+            onValueChange={(itemValue, itemIndex) => setRole(itemValue)}
+          >
+            <Picker.Item label="Donor" value="Donor" />
+            <Picker.Item label="Reciever" value="Reciever" />
+          </Picker>
+          <Button danger onPress={updateUserDetails} full>
+            <Text> Update Profile </Text>
+          </Button>
+
+          {/* <Button style={Styles.updateButton}  onPress={updateUserDetails} title="Upate Profile" /> */}
         </View>
-      ) : (
-        <View
-          style={{
-            textAlign: "center",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          <Text style={{ fontSize: 18 }}>Loading...</Text>
-        </View>
-      )}
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -241,6 +263,11 @@ const Styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 1,
   },
+  // bg:{
+  //   // marginVertical:"30",
+  //   backgroundColor:"yellow",
+  //   height:"30"
+  // }
 });
 const mapStateToProps = (state) => {
   return {
