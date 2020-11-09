@@ -8,7 +8,7 @@ import {
   TextInput,
   Button,
   Image,
-  TouchableOpacityBase,
+  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import Loader from "../../Components/Loader";
@@ -21,8 +21,7 @@ import {
   sigInWithFirebase,
   getUser,
 } from "../../Config/firebase";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Login = (props) => {
   const [signUp, setSignUp] = useState(false);
@@ -113,8 +112,7 @@ const Login = (props) => {
   const signUpWithEmail = () => {
     console.log("Sign Up With Email ", email, userName, password);
     sigUpWithFirebase(userName, email, password, setToReducer);
-              setLoader(true);
-
+    setLoader(true);
   };
   const setToReducer = (id) => {
     const data = {
@@ -125,7 +123,6 @@ const Login = (props) => {
     console.log(data);
     props.signedInUser(data);
     setLoader(true);
-
   };
   const signInWithEmail = async () => {
     console.log("1111", email, userName, password);
@@ -146,13 +143,13 @@ const Login = (props) => {
               style={Styles.stretch}
               source={require("../../../assets/blood-drop.png")}
             />
-            <Text style={Styles.loginHeader}>Blood Donation</Text>
+            <Text style={Styles.loginHeader}>Login</Text>
           </View>
 
           {signUp ? (
             <View>
               <View style={Styles.fieldHeader}>
-                {/* <Icon name="user" color={"#D32F2F"} size={25} /> */}
+                <Icon name="person" color={"black"} size={25} />
                 <TextInput
                   style={Styles.textField}
                   placeholder="Enter UserName"
@@ -160,7 +157,7 @@ const Login = (props) => {
                 />
               </View>
               <View style={Styles.fieldHeader}>
-                <Icon name="home-outline" color={"#D32F2F"} size={25} />
+                <Icon name="email" color={"#000"} size={25} />
                 <TextInput
                   style={Styles.textField}
                   placeholder="Enter Your Email"
@@ -170,17 +167,22 @@ const Login = (props) => {
                 />
               </View>
               <View style={Styles.fieldHeader}>
-                <Icon name="lock" color={"#D32F2F"} size={25} />
+                <Icon name="lock" color={"#000"} size={25} />
                 <TextInput
                   style={Styles.textField}
                   placeholder="Enter Your Password"
                   onChangeText={(text) => setPassword(text)}
                 />
               </View>
-              <View style={{ marginBottom: 10 }}>
-                <Button title="Sign Up" onPress={signUpWithEmail} />
+              <View style={Styles.authBtns}>
+                <TouchableOpacity onPress={signUpWithEmail}>
+                  <Text style={Styles.authStyle}>Sign Up</Text>
+                </TouchableOpacity>
+                {/* <Button title="Sign Up" onPress={signUpWithEmail} /> */}
               </View>
-              <Button title="SignIn With Facebook" onPress={faceBookLogin} />
+              <TouchableOpacity onPress={faceBookLogin}>
+                <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
+              </TouchableOpacity>
 
               <TouchableOpacity onPress={clearStateSignIn}>
                 <Text style={{ fontSize: 15, paddingTop: 20 }}>
@@ -191,7 +193,7 @@ const Login = (props) => {
           ) : (
             <View>
               <View style={Styles.fieldHeader}>
-                <Icon name="home-outline" color={"#D32F2F"} size={25} />
+                <Icon name="email" color={"#000"} size={25} />
                 <TextInput
                   style={Styles.textField}
                   placeholder="Enter Your Email"
@@ -201,7 +203,7 @@ const Login = (props) => {
                 />
               </View>
               <View style={Styles.fieldHeader}>
-                <Icon name="lock" color={"#D32F2F"} size={25} />
+                <Icon name="lock" color={"#000"} size={25} />
                 <TextInput
                   style={Styles.textField}
                   placeholder="Enter Your Password"
@@ -211,10 +213,18 @@ const Login = (props) => {
                 />
               </View>
               <View style={{ marginBottom: 10 }}>
-                <Button title="Sign In" onPress={signInWithEmail} />
+                {/* <Button title="Sign In" onPress={signInWithEmail} /> */}
               </View>
+              <TouchableOpacity onPress={signInWithEmail}>
+                <Text style={Styles.authStyle}>Sign In </Text>
+              </TouchableOpacity>
 
-              <Button title="SignIn With Facebook" onPress={faceBookLogin} />
+             <View style={Styles.authBtns}>
+             <TouchableOpacity onPress={faceBookLogin}>
+                <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
+              </TouchableOpacity>
+              </View>
+              {/* <Button title="SignIn With Facebook" onPress={faceBookLogin} /> */}
               <TouchableOpacity onPress={clearStateSignUp}>
                 <Text style={{ fontSize: 15, paddingTop: 20 }}>
                   Don't Have An Account?Sign Up
@@ -243,7 +253,8 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
 const Styles = StyleSheet.create({
   loginWrapper: {
-    backgroundColor: "white",
+    backgroundColor: "#f05454",
+
     paddingLeft: 60,
     paddingRight: 60,
     alignSelf: "stretch",
@@ -251,8 +262,8 @@ const Styles = StyleSheet.create({
     justifyContent: "center",
   },
   loginHeader: {
-    fontSize: 34,
-    color: "black",
+    color: "white",
+    fontSize: 50,
     marginBottom: 30,
   },
   textName: {
@@ -260,6 +271,7 @@ const Styles = StyleSheet.create({
   },
   textField: {
     flex: 1,
+
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
@@ -270,10 +282,13 @@ const Styles = StyleSheet.create({
     // marginBottom: 30,
     alignItems: "stretch",
     textAlign: "left",
-    borderBottomColor: "black",
-    borderBottomWidth: 2,
+    // borderBottomColor: "black",
+
     fontSize: 19,
     paddingLeft: 10,
+
+    backgroundColor: "transparent",
+    color: "#000",
   },
   stretch: {
     width: 100,
@@ -281,21 +296,47 @@ const Styles = StyleSheet.create({
   },
   AppHeader: { display: "flex", textAlign: "center", alignItems: "center" },
   fieldName: {
-    color: "#05375a",
+    color: "#fff",
     fontSize: 20,
     paddingBottom: 10,
     paddingTop: 10,
   },
   fieldHeader: {
-    paddingBottom: 20,
+    borderRadius: 50,
+    paddingLeft: 10,
+    paddingVertical: 5,
+    marginVertical: 2,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   facebookButton: {
     fontSize: 22,
     color: "red",
     backgroundColor: "green",
+  },
+  authBtns: {
+    marginVertical: 5,
+  },
+  authStyle: {
+    color: "#fff",
+    backgroundColor: "#f05454",
+    borderWidth: 1,
+    borderColor: "#fff",
+    padding: 10,
+    borderRadius: 50,
+    textAlign: "center",
+    fontSize: 20,
+  },
+  fbStyles: {
+    color: "#fff",
+    backgroundColor: "#214252",
+    // borderWidth: 1,
+    borderColor: "#fff",
+    padding: 10,
+    borderRadius: 50,
+    textAlign: "center",
+    fontSize: 20,
   },
 });

@@ -21,6 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { cos } from "react-native-reanimated";
 
 const Profile = (props) => {
   const [userData, setUserData] = useState();
@@ -31,10 +32,15 @@ const Profile = (props) => {
   const [userPhoneNumber, setUserPhoneNumber] = useState(
     props.userInfo.user.userPhoneNumber
   );
-  const [bloodpicker, setBloodPicker] = useState("");
-  const [health, setHealth] = useState("");
-  const [role, setRole] = useState("");
-  const [location, setLocation] = useState(null);
+  const [bloodpicker, setBloodPicker] = useState(
+    props.userInfo.user.bloodpicker
+  );
+  const [health, setHealth] = useState(props.userInfo.user.health);
+  const [role, setRole] = useState(props.userInfo.user.role);
+  const [updateLocation, setUpdateLocation] = useState(
+    props.userInfo.user.userLocation
+  );
+  const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
@@ -46,20 +52,22 @@ const Profile = (props) => {
         }
       }
     };
-    (async () => {
+  }, []);
+  const backAction = () => {
+    props.navigation.navigate("Home");
+  };
+  const updateMyLocation = () => {
+    console.log(props && props.userInfo.user);
+    async () => {
       let { status } = await Location.requestPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
       }
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
-  }, []);
-  const backAction = () => {
-    props.navigation.navigate("Home");
+    };
   };
   useEffect(() => {
-
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
@@ -80,7 +88,7 @@ const Profile = (props) => {
         health,
         bloodpicker,
         role,
-        userLocation: location.coords,
+        userLocation: updateLocation,
         userId: props.userInfo.user.userId,
       };
       setUpdateUserData(updateUserObj);
@@ -130,8 +138,7 @@ const Profile = (props) => {
       .then((blob) => {
         return uploadToFirebase(blob, props.userId);
       })
-      .then((snapshot) => {
-      })
+      .then((snapshot) => {})
       .catch((error) => {
         throw error;
       });
@@ -221,9 +228,18 @@ const Profile = (props) => {
             }}
             onValueChange={(itemValue, itemIndex) => setRole(itemValue)}
           >
-            <Picker.Item label="Donor" value="Donor" />
             <Picker.Item label="Reciever" value="Reciever" />
+            <Picker.Item label="Donor" value="Donor" />
           </Picker>
+
+          <Button
+            info
+            style={{ marginBottom: 4 }}
+            onPress={updateMyLocation}
+            full
+          >
+            <Text> Set Current Location </Text>
+          </Button>
           <Button danger onPress={updateUserDetails} full>
             <Text> Update Profile </Text>
           </Button>

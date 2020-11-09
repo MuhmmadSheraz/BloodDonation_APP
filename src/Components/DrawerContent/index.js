@@ -96,7 +96,6 @@ export function DrawerContent(props) {
   );
 }
 const mapStateToProps = (state) => {
-  console.log("state from Drawer", state);
   return {
     userInfo: state.authReducer,
   };

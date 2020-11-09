@@ -15,7 +15,7 @@ export default App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <StackNavigator />
-          <StatusBar />
+          {/* <StatusBar /> */}
         </NavigationContainer>
       </PersistGate>
     </Provider>

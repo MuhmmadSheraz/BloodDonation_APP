@@ -100,8 +100,8 @@ const sigInWithFirebase = async (email, password) => {
 const getUser = (id) => {
   return firebase.firestore().collection("user").doc(id).get();
 };
-const getAllUsers = async () => {
-  return await firebase.firestore().collection("user").get();
+const getAllDonors = async () => {
+  return await firebase.firestore().collection("user").where("role","==","Donor").get();
 };
 const joinChatRoom = async (senderId, recieverId) => {
   let checkRoom = await firebase
@@ -161,7 +161,7 @@ export {
   sigUpWithFirebase,
   sigInWithFirebase,
   getUser,
-  getAllUsers,
+  getAllDonors,
   joinChatRoom,
   sendMessage,
   renderChat,

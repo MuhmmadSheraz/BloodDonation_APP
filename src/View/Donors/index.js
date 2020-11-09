@@ -13,13 +13,11 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { showAreas } from "../../Config/utils";
-import { getAllUsers } from "../../Config/firebase";
+import { getAllDonors } from "../../Config/firebase";
 import Loader from "../../Components/Loader";
 import { useIsFocused } from "@react-navigation/native";
 import { addAreas } from "../../Store/Action/areaAction";
 import { Picker } from "@react-native-community/picker";
-import { $CombinedState } from "redux";
-import { cos } from "react-native-reanimated";
 
 const Item = ({ Parentprops, item, user }) => (
   <View style={Styles.itemContainer}>
@@ -32,7 +30,6 @@ const Item = ({ Parentprops, item, user }) => (
       />
       <View style={Styles.midContainer}>
         <Text style={{ fontWeight: "bold" }}>{item.item.userName}</Text>
-        <Text>Kia Haal ha</Text>
       </View>
     </View>
     <Button
@@ -83,7 +80,7 @@ const Donors = (props) => {
   };
 
   const sortDonors = async () => {
-    const donorsData = await getAllUsers();
+    const donorsData = await getAllDonors();
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
