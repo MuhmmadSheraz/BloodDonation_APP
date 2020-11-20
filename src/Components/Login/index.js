@@ -10,6 +10,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Loader from "../../Components/Loader";
 import {} from "../../Store/Action/authAction";
@@ -32,11 +33,11 @@ const Login = (props) => {
 
   useEffect(() => {
     setLoader(false);
-    console.log("Login Rendered");
-    if (props.user.user !== null) {
-      props.navigation.navigate("Home");
-      console.log("props From Login useEffect", props.user.user);
-    }
+    // console.log("Login Rendered");
+    // if (props.user.user !== null) {
+    //   props.navigation.navigate("Home");
+    // console.log("props From Login useEffect", props.user.user);
+    // }
   }, [props.user.user]);
   const faceBookLogin = async () => {
     try {
@@ -56,31 +57,31 @@ const Login = (props) => {
       //Permission
       if (type === "success") {
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
-        // console.log(credential);
+        console.log(credential);
         firebase
           .auth()
           .signInWithCredential(credential)
           .catch((error) => {
-            // console.log("error", error);
+            console.log("error", error);
           });
         const responseData = await fetch(
           `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture`
         );
         await responseData.json().then(async (data) => {
           setLoader(true);
-          console.log("responseData ==>", data);
+          // console.log("responseData ==>", data);
           const check = await getUser(data.id);
           if (check.data() !== undefined) {
-            console.log("If Working");
+            console.log("If Working",data);
             // hello(check.data());
             props.signedInUser(check.data());
-            console.log("Check Data***", check.data());
+            // console.log("Check Data***", check.data());
           } else {
             console.log("Else Working", data);
             const userInfo = {
               userName: data.name,
               userId: data.id,
-              userEmail: data.email,
+              userEmail: data?.email,
               profilePicture: data.picture.data.url,
             };
             hello(data);
@@ -92,27 +93,33 @@ const Login = (props) => {
       } else {
         alert("Permission Cancelled");
       }
-    } catch {
-      alert("FaceBook Login Failed==>");
+    } catch(er) {
+      alert("FaceBook Login Failed");
+console.log("eroor",er)      
     }
   };
 
   const clearStateSignIn = async () => {
-    console.log("Will Render Sign In");
+    // console.log("Will Render Sign In");
     setPassword("");
     setEmail("");
     setSignUp(false);
   };
   const clearStateSignUp = () => {
-    console.log("Will Render Sign Up");
+    // console.log("Will Render Sign Up");
     setPassword("");
     setEmail("");
     setSignUp(true);
   };
   const signUpWithEmail = () => {
-    console.log("Sign Up With Email ", email, userName, password);
-    sigUpWithFirebase(userName, email, password, setToReducer);
+    if ((!email, !password, !userName))
+      return Alert.alert("Please Fill All The Fields");
     setLoader(true);
+    setTimeout(() => {
+      setLoader(false);
+    }, 2000);
+    // console.log("Sign Up With Email ", email, userName, password);
+    sigUpWithFirebase(userName, email, password, setToReducer);
   };
   const setToReducer = (id) => {
     const data = {
@@ -120,34 +127,35 @@ const Login = (props) => {
       userEmail: email,
       userId: id,
     };
-    console.log(data);
+    // console.log(data);
     props.signedInUser(data);
     setLoader(true);
   };
   const signInWithEmail = async () => {
-    console.log("1111", email, userName, password);
-    console.log("Sign In With Email ", email, userName, password);
-    setLoader(true);
+    if ((!email, !password)) return Alert.alert("Please Fill All The Fields");
     const a = await sigInWithFirebase(email, password);
+    setLoader(true);
+    setTimeout(() => {
+      setLoader(false);
+    }, 2000);
     await props.signedInUser(a.data());
 
-    console.log("response", a.data());
+    // console.log("response", a.data());
   };
-
+  
   return (
     <View style={Styles.loginWrapper}>
       {!loader ? (
         <View>
-          <View style={Styles.AppHeader}>
-            <Image
-              style={Styles.stretch}
-              source={require("../../../assets/blood-drop.png")}
-            />
-            <Text style={Styles.loginHeader}>Login</Text>
-          </View>
-
           {signUp ? (
             <View>
+              <View style={Styles.AppHeader}>
+                <Image
+                  style={Styles.stretch}
+                  source={require("../../../assets/blooddrop.png")}
+                />
+                <Text style={Styles.loginHeader}>Sign Up</Text>
+              </View>
               <View style={Styles.fieldHeader}>
                 <Icon name="person" color={"black"} size={25} />
                 <TextInput
@@ -172,6 +180,7 @@ const Login = (props) => {
                   style={Styles.textField}
                   placeholder="Enter Your Password"
                   onChangeText={(text) => setPassword(text)}
+                  secureTextEntry={true}
                 />
               </View>
               <View style={Styles.authBtns}>
@@ -184,14 +193,21 @@ const Login = (props) => {
                 <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={clearStateSignIn}>
                 <Text style={{ fontSize: 15, paddingTop: 20 }}>
-                  Already Have An Account? Sign In
+                  Already Have An Account? <Text onPress={clearStateSignIn} style={{color:"#ffff"}} >
+                    Sign In
+                    </Text>
                 </Text>
-              </TouchableOpacity>
             </View>
           ) : (
             <View>
+              <View style={Styles.AppHeader}>
+                <Image
+                  style={Styles.stretch}
+                  source={require("../../../assets/blooddrop.png")}
+                />
+                <Text style={Styles.loginHeader}>Login</Text>
+              </View>
               <View style={Styles.fieldHeader}>
                 <Icon name="email" color={"#000"} size={25} />
                 <TextInput
@@ -210,6 +226,7 @@ const Login = (props) => {
                   onChangeText={(text) => {
                     setPassword(text);
                   }}
+                  secureTextEntry={true}
                 />
               </View>
               <View style={{ marginBottom: 10 }}>
@@ -219,15 +236,21 @@ const Login = (props) => {
                 <Text style={Styles.authStyle}>Sign In </Text>
               </TouchableOpacity>
 
-             <View style={Styles.authBtns}>
-             <TouchableOpacity onPress={faceBookLogin}>
-                <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
-              </TouchableOpacity>
+              <View style={Styles.authBtns}>
+                <TouchableOpacity onPress={faceBookLogin}>
+                  <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
+                </TouchableOpacity>
               </View>
               {/* <Button title="SignIn With Facebook" onPress={faceBookLogin} /> */}
-              <TouchableOpacity onPress={clearStateSignUp}>
-                <Text style={{ fontSize: 15, paddingTop: 20 }}>
-                  Don't Have An Account?Sign Up
+              <TouchableOpacity>
+                <Text
+                  style={{ fontSize: 15, paddingTop: 20, textAlign: "center" }}
+                >
+                  Don't Have An Account?{" "}
+                  <Text onPress={clearStateSignUp} style={{ color: "white" }}>
+                    {" "}
+                    Sign Up
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </View>
@@ -240,7 +263,7 @@ const Login = (props) => {
   );
 };
 const mapStateToProps = (state) => {
-  console.log("State Login Componenet***", state);
+  // console.log("State Login Componenet***", state);
   return {
     user: state.authReducer,
   };
@@ -255,8 +278,8 @@ const Styles = StyleSheet.create({
   loginWrapper: {
     backgroundColor: "#f05454",
 
-    paddingLeft: 60,
-    paddingRight: 60,
+    paddingLeft: 35,
+    paddingRight: 35,
     alignSelf: "stretch",
     flex: 1,
     justifyContent: "center",
@@ -264,14 +287,14 @@ const Styles = StyleSheet.create({
   loginHeader: {
     color: "white",
     fontSize: 50,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   textName: {
     fontSize: 20,
   },
   textField: {
     flex: 1,
-
+    // width: 50,
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
@@ -317,7 +340,7 @@ const Styles = StyleSheet.create({
     backgroundColor: "green",
   },
   authBtns: {
-    marginVertical: 5,
+    marginVertical: 15,
   },
   authStyle: {
     color: "#fff",
@@ -328,6 +351,7 @@ const Styles = StyleSheet.create({
     borderRadius: 50,
     textAlign: "center",
     fontSize: 20,
+    marginVertical: 5,
   },
   fbStyles: {
     color: "#fff",

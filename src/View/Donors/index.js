@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
-  SafeAreaView,
   View,
   FlatList,
   StyleSheet,
   Text,
-  StatusBar,
   Image,
-  Button,
+  // Button,
   ScrollView,
   BackHandler,
+  TouchableOpacity,
 } from "react-native";
+import { Button } from "native-base";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { connect } from "react-redux";
 import { showAreas } from "../../Config/utils";
 import { getAllDonors } from "../../Config/firebase";
@@ -18,6 +20,7 @@ import Loader from "../../Components/Loader";
 import { useIsFocused } from "@react-navigation/native";
 import { addAreas } from "../../Store/Action/areaAction";
 import { Picker } from "@react-native-community/picker";
+import { cos } from "react-native-reanimated";
 
 const Item = ({ Parentprops, item, user }) => (
   <View style={Styles.itemContainer}>
@@ -32,15 +35,26 @@ const Item = ({ Parentprops, item, user }) => (
         <Text style={{ fontWeight: "bold" }}>{item.item.userName}</Text>
       </View>
     </View>
-    <Button
-      title="Detail"
+    <TouchableOpacity
+      style={{
+        justifyContent: "center",
+      }}
       onPress={() =>
         Parentprops.navigation.navigate("DonorDetails", {
           DonorId: item.item.userId,
           userId: Parentprops.user.user.userId,
         })
       }
-    />
+    >
+      <Text
+        style={{
+          color: "#2782BB",
+          paddingRight: 10,
+        }}
+      >
+        View
+      </Text>
+    </TouchableOpacity>
   </View>
 );
 
@@ -52,11 +66,16 @@ const Donors = (props) => {
   const [isFilteredBlood, setIsFilteredBlood] = useState(false);
   const [isFilteredArea, setIsFilteredArea] = useState(false);
 
-  const isFocused = useIsFocused();
+  // const  = useIsFocused();
   const backAction = () => {
     props.navigation.navigate("Home");
   };
   useEffect(() => {
+    console.log(props.user.user);
+    if (!props.user.user.userLocation) {
+      alert("Please Update Your Location");
+      return backAction();
+    }
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
@@ -72,34 +91,42 @@ const Donors = (props) => {
       setIsFilteredArea(false);
       setIsFilteredBlood(false);
     };
-  }, [isFocused]);
+  }, []);
 
   const getAreas = async () => {
-    const data = await showAreas();
+    const data = await showAreas(
+      props.user.user.userLocation.latitude,
+      props.user.user.userLocation.longitude
+    );
     props.addAreas(data);
   };
 
   const sortDonors = async () => {
     const donorsData = await getAllDonors();
+
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
+        if (x.data().userName === props.user.user.userName) {
+          console.log(x.data())
+          // continue;
+        }
         let axisObj = {
           userLatitude:
             props.user.user.userLocation &&
             props.user.user.userLocation.latitude,
-          donorLatitude: x.data() && x.data().userLocation.latitude,
+          donorLatitude: x.data().userLocation.latitude,
           userLongitude:
             props.user.user.userLocation &&
             props.user.user.userLocation.longitude,
-          donorLogitude: x.data() && x.data().userLocation.longitude,
+          donorLogitude: x.data().userLocation.longitude,
         };
-
         const response = checkDistance(axisObj);
         if (response < 10) {
           array.push(x.data());
         }
       });
+
     setDonors(array);
     setLoader(false);
   };
@@ -131,7 +158,7 @@ const Donors = (props) => {
   const filterByArea = async () => {
     const data = props.areas.areas.filter((x) => x.name === area);
 
-    const donorsData = await getAllUsers();
+    const donorsData = await getAllDonors();
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
@@ -155,7 +182,7 @@ const Donors = (props) => {
     setLoader(false);
   };
   const filterByBloodGroup = async () => {
-    const donorsData = await getAllUsers();
+    const donorsData = await getAllDonors();
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
@@ -186,7 +213,7 @@ const Donors = (props) => {
     }
   };
   const allDonors = async () => {
-    const donorsData = await getAllUsers();
+    const donorsData = await getAllDonors();
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
@@ -198,7 +225,7 @@ const Donors = (props) => {
   const extremeFilter = async () => {
     const data = props.areas.areas.filter((x) => x.name === area);
     const array = [];
-    const donorsData = await getAllUsers();
+    const donorsData = await getAllDonors();
     donorsData &&
       donorsData.forEach((x) => {
         if (data.length === 0) {
@@ -240,7 +267,9 @@ const Donors = (props) => {
     <ScrollView>
       {!loader ? (
         <View>
-          <Text>Filter By Nearest Area</Text>
+          <Text style={{ fontSize: 18, padding: 10 }}>
+            Filter By Nearest Area
+          </Text>
 
           <Picker
             selectedValue={area}
@@ -258,7 +287,9 @@ const Donors = (props) => {
                 );
               })}
           </Picker>
-          <Text>Filter By Blood Group</Text>
+          <Text style={{ fontSize: 18, padding: 10 }}>
+            Filter By Blood Group
+          </Text>
 
           <Picker
             selectedValue={blood}
@@ -267,15 +298,22 @@ const Donors = (props) => {
             <Picker.Item label="All Blood Groups" value="" />
             <Picker.Item label="A+" value="A+" />
             <Picker.Item label="A-" value="A-" />
-            <Picker.Item label="B+" value="B-" />
-            <Picker.Item label="B+" value="B-" />
-            <Picker.Item label="B-" value="B+" />
+            <Picker.Item label="B-" value="B-" />
+            <Picker.Item label="B+" value="B+" />
             <Picker.Item label="O-" value="O-" />
             <Picker.Item label="O+" value="O+" />
             <Picker.Item label="AB+" value="AB+" />
             <Picker.Item label="AB-" value="AB-" />
           </Picker>
-          <Button title="Filter Donors" onPress={filterNow} />
+          <Button
+            full
+            warning
+            onPress={filterNow}
+            style={{ marginHorizontal: 10, borderRadius: 5 }}
+          >
+            <Icon name="filter" size={20} />
+            <Text style={{ fontSize: 20 }}>Filter Donor</Text>
+          </Button>
           <FlatList
             data={donors}
             renderItem={renderItem}
@@ -308,8 +346,9 @@ const Styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     padding: 10,
-    borderColor: "gray",
-    borderWidth: 1,
+    // borderColor: "gray",
+    marginHorizontal: 5,
+    // borderWidth: 1,
     marginVertical: 5,
     marginHorizontal: 5,
   },
@@ -321,6 +360,8 @@ const Styles = StyleSheet.create({
     width: 60,
     borderRadius: 10,
     marginRight: 10,
+    // borderBottom:1,
+    borderWidth: 1,
   },
   midContainer: {
     justifyContent: "space-around",
@@ -328,6 +369,7 @@ const Styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
+  console.log(state.authReducer);
   return {
     user: state.authReducer,
     areas: state.areaReducer,

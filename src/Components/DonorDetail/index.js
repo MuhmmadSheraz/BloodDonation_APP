@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getUser, joinChatRoom } from "../../Config/firebase";
-import { View, Text, Image, StyleSheet, Button, Linking } from "react-native";
+import { View, Text, Image, StyleSheet, Linking } from "react-native";
+import { Button } from "native-base";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const DonorDetails = (props) => {
   const [donorData, setDonorData] = useState([]);
@@ -29,44 +33,60 @@ const DonorDetails = (props) => {
       recieverId: props.route.params.DonorId,
     });
   };
+
   return (
     <View style={styles.container}>
       {donorData && (
         <View style={{ marginTop: 30 }}>
-          <View style={styles.imageWrapper}>
+          <TouchableOpacity
+            style={styles.imageWrapper}
+            onPress={() => alert("image clicked")}
+          >
             <Image
               source={{
                 uri: donorData.profilePicture,
               }}
               style={styles.avatar}
             />
-          </View>
+          </TouchableOpacity>
+          {/* <View style={styles.imageWrapper}>
+            <Image
+              source={{
+                uri: donorData.profilePicture,
+              }}
+              style={styles.avatar}
+            />
+          </View> */}
           <View>
-            <Text
-              style={{ fontSize: 20, textAlign: "center", marginVertical: 10 }}
-            >
-              {donorData.userName}
+            <Text style={{ fontSize: 20, margin: 10 }}>
+              Name: {donorData.userName}
             </Text>
-            <Text
-              style={{ fontSize: 20, textAlign: "center", marginVertical: 10 }}
-            >
-              {donorData.bloodpicker}
+            <Text style={{ fontSize: 20, margin: 10 }}>
+              Blood Group: {donorData.bloodpicker}
             </Text>
-            <Text
-              style={{ fontSize: 20, textAlign: "center", marginVertical: 10 }}
-            >
-              {donorData.userPhoneNumber}
+            <Text style={{ fontSize: 20, margin: 10 }}>
+              Phone Number: {donorData.userPhoneNumber}
             </Text>
-            <View style={{ marginVertical: 10 }}>
-              <Button
+            <View style={{ margin: 10 }}>
+              <Button block info  onPress={() =>
+                  Linking.openURL(`tel:${donorData.userPhoneNumber}`)
+                }>
+              <Icon name="call-made" color={"#fff"} size={20} />
+                <Text style={{ color: "white" }}> Call Now</Text>
+              </Button >
+              {/* <Button
                 title="Call Now"
                 onPress={() =>
                   Linking.openURL(`tel:${donorData.userPhoneNumber}`)
-                }
-              />
+                } */}
+              {/* /> */}
             </View>
-            <View>
-              <Button title="Chat Now" onPress={startChat} />
+            <View style={{ margin: 10 }}>
+              {/* <Button title="Chat Now" onPress={startChat} /> */}
+              <Button block success onPress={startChat} >
+                <Icon name="chat-outline" color={"#fff"} size={20} />
+                <Text style={{ color: "white" }}> Start Chat</Text>
+              </Button>
             </View>
           </View>
         </View>
@@ -79,19 +99,17 @@ export default DonorDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent:"center",
-    alignItems: "center",
+    // alignItems: "center",
   },
   avatar: {
     alignItems: "center",
     justifyContent: "center",
-    height: 100,
-    width: 100,
-    borderRadius: 50,
+    height: 150,
+    width: 150,
+    borderRadius: 80,
     marginRight: 10,
   },
   imageWrapper: {
-    textAlign: "center",
     flexDirection: "row",
     justifyContent: "center",
   },

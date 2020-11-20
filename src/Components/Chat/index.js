@@ -10,13 +10,12 @@ import {
   Button,
   Image,
   TouchableOpacity,
-  BackHandler
+  BackHandler,
+  SafeAreaView, ScrollView 
 } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
 
 const Chat = (props) => {
   const [allChat, setAllChat] = useState([]);
-  const isFocused = useIsFocused();
   const backAction = () => {
     props.navigation.navigate("Home");
   };
@@ -77,6 +76,7 @@ const Chat = (props) => {
   };
   return (
     <View>
+       <ScrollView style={Style.scrollView}>
       {allChat &&
         allChat.map((item) => {
           return (
@@ -102,6 +102,7 @@ const Chat = (props) => {
             </TouchableOpacity>
           );
         })}
+        </ScrollView>
     </View>
   );
 };
@@ -120,6 +121,9 @@ const Style = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     padding: 10,
+  },
+  scrollView: {
+    marginHorizontal: 20,
   },
   leftContainer: {
     flexDirection: "row",

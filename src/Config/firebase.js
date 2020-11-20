@@ -1,4 +1,5 @@
 import * as firebase from "firebase";
+import { Alert } from "react-native";
 import { createNativeWrapper } from "react-native-gesture-handler";
 import { cos } from "react-native-reanimated";
 const firebaseConfig = {
@@ -19,37 +20,66 @@ if (!firebase.apps.length) {
 //Functions
 
 const hello = (obj) => {
-  firebase.firestore().collection("user").doc(obj.id).set({
-    userId: obj.id,
-    userEmail: obj.email,
-    userName: obj.name,
-    profilePicture: obj.picture.data.url,
-  });
+  if (obj.email) {
+    firebase.firestore().collection("user").doc(obj.id).set({
+      userId: obj.id,
+      userEmail: obj?.email,
+      userName: obj.name,
+      profilePicture: obj.picture.data.url,
+    });
+  } else {
+    firebase.firestore().collection("user").doc(obj.id).set({
+      userId: obj.id,
+      userEmail: "",
+      userName: obj.name,
+      profilePicture: obj.picture.data.url,
+    });
+  }
 };
 
 const updateUser = (obj) => {
-  firebase
-    .firestore()
-    .collection("user")
-    .doc(obj.userId)
-    .update({
-      userName: obj.userName,
-      profilePicture: obj.profilePicture
-        ? obj.profilePicture
-        : "https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-12.jpg",
-      userPhoneNumber: obj.userPhoneNumber,
-      health: obj.health,
-      bloodpicker: obj.bloodpicker,
-      role: obj.role,
-      userLocation: obj.userLocation,
-      userId: obj.userId,
-    });
+  console.log("firebase Update ===========>",obj)
+  if (obj.userLocation) {
+    firebase
+      .firestore()
+      .collection("user")
+      .doc(obj.userId)
+      .update({
+        userName: obj.userName,
+        profilePicture: obj.profilePicture
+          ? obj.profilePicture
+          : "https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-12.jpg",
+        userPhoneNumber: obj.userPhoneNumber,
+        health: obj.health,
+        bloodpicker: obj.bloodpicker,
+        role: obj.role,
+        userLocation: obj.userLocation,
+        userId: obj.userId,
+      });
+  } else {
+    firebase
+      .firestore()
+      .collection("user")
+      .doc(obj.userId)
+      .update({
+        userName: obj.userName,
+        profilePicture: obj.profilePicture
+          ? obj.profilePicture
+          : "https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-12.jpg",
+        userPhoneNumber: obj.userPhoneNumber,
+        health: obj.health,
+        bloodpicker: obj.bloodpicker,
+        role: obj.role,
+        userId: obj.userId,
+      });
+  }
 };
 const storageRef = firebase.storage().ref();
 const uploadToFirebase = (blob, userId) => {
+  console.log("Firebase User Id", userId);
   return new Promise((resolve, reject) => {
     storageRef
-      .child(`uploads/${userId}photo.jpg`)
+      .child(`uploads/${userId}.jpg`)
       .put(blob, {
         contentType: "image/jpeg",
       })
@@ -63,9 +93,10 @@ const uploadToFirebase = (blob, userId) => {
       });
   });
 };
-const getImageUrl = async ({ userId }) => {
+const getImageUrl = (userId) => {
+  console.log("DOWNLOAED", userId);
   return storageRef
-    .child(`uploads/${userId}photo.jpg`)
+    .child(`uploads/${userId}.jpg`)
     .getDownloadURL()
     .then(function (url) {
       return url;
@@ -82,7 +113,9 @@ const sigUpWithFirebase = async (userName, email, password, setReducer) => {
       userId: user.user.uid,
     });
     setReducer(user.user.uid);
-  } catch (error) {}
+  } catch (error) {
+    return Alert.alert(error.message);
+  }
 };
 const sigInWithFirebase = async (email, password) => {
   try {
@@ -95,13 +128,19 @@ const sigInWithFirebase = async (email, password) => {
       .collection("user")
       .doc(user.user.uid)
       .get();
-  } catch (error) {}
+  } catch (error) {
+    return Alert.alert(error.message);
+  }
 };
 const getUser = (id) => {
   return firebase.firestore().collection("user").doc(id).get();
 };
 const getAllDonors = async () => {
-  return await firebase.firestore().collection("user").where("role","==","Donor").get();
+  return await firebase
+    .firestore()
+    .collection("user")
+    .where("role", "==", "Donor")
+    .get();
 };
 const joinChatRoom = async (senderId, recieverId) => {
   let checkRoom = await firebase

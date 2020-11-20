@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
+import * as Facebook from "expo-facebook";
+
 import {
   useTheme,
   Avatar,
@@ -12,6 +14,7 @@ import {
   Switch,
 } from "react-native-paper";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+import { removeUser } from "../../Store/Action/authAction";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
@@ -19,7 +22,13 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 export function DrawerContent(props) {
   const paperTheme = useTheme();
-  
+
+  const facebooklogout = () => {
+    Facebook.logOutAsync();
+    props.loggedOut();
+    console.log("logout fun");
+    props.navigation.navigate("Login");
+  };
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -87,7 +96,7 @@ export function DrawerContent(props) {
             )}
             label="Sign Out"
             onPress={() => {
-              signOut();
+              facebooklogout();
             }}
           />
         </Drawer.Section>
@@ -100,7 +109,12 @@ const mapStateToProps = (state) => {
     userInfo: state.authReducer,
   };
 };
-export default connect(mapStateToProps, null)(DrawerContent);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loggedOut: () => dispatch(removeUser(null)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(DrawerContent);
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,

@@ -18,64 +18,75 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function StackNavigator(props) {
+  
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{
-          headerShown: false,
-        }}
-      />
-
-      <Stack.Screen
-        name="Home"
-        component={MainNavigator}
-        options={{ title: "My home", headerLeft: null }}
-      />
-      <Stack.Screen
-        name="DonorDetails"
-        component={DonorDetail}
-        options={{ title: "Donors Details" ,
-        headerStyle: {
-          backgroundColor: "#db2924",
-        },
-        headerTintColor: "#fff",}}
-      />
-      <Stack.Screen
-        name="Chat"
-        component={Chat}
-        options={{ title: "My Chats" ,
-        headerStyle: {
-          backgroundColor: "#db2924",
-        },
-        headerTintColor: "#fff",}}
-      />
-      <Stack.Screen
-        name="Donors"
-        component={Donors}
-        options={{ title: "My Donors" ,
-        headerStyle: {
-          backgroundColor: "#db2924",
-        },
-        headerTintColor: "#fff",}}
-      />
-      <Stack.Screen
-        name="ChatRoom"
-        component={ChatRoom}
-        options={({ route }) => ({ title: route.params.name })}
-      />
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          title: "Profile",
-          headerStyle: {
-            backgroundColor: "#db2924",
-          },
-          headerTintColor: "#fff",
-        }}
-      />
+      {props.user.user ? (
+        <>
+          <Stack.Screen
+            name="Home"
+            component={MainNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DonorDetails"
+            component={DonorDetail}
+            options={{
+              title: "Donors Details",
+              headerStyle: {
+                backgroundColor: "#db2924",
+              },
+              headerTintColor: "#fff",
+            }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
+            options={{
+              title: "My Chats",
+              headerStyle: {
+                backgroundColor: "#db2924",
+              },
+              headerTintColor: "#fff",
+            }}
+          />
+          <Stack.Screen
+            name="Donors"
+            component={Donors}
+            options={{
+              title: "My Donors",
+              headerStyle: {
+                backgroundColor: "#db2924",
+              },
+              headerTintColor: "#fff",
+            }}
+          />
+          <Stack.Screen
+            name="ChatRoom"
+            component={ChatRoom}
+            options={({ route }) => ({ title: route.params.name })}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{
+              title: "Profile",
+              headerStyle: {
+                backgroundColor: "#db2924",
+              },
+              headerTintColor: "#fff",
+            }}
+          />
+        </>
+      ) : (
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            headerShown: false,
+          }}
+        />
+      )}
     </Stack.Navigator>
   );
 }

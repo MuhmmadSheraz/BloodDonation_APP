@@ -5,13 +5,10 @@ const Loader = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={{
-          uri:
-            "https://i.pinimg.com/originals/45/12/4d/45124d126d0f0b6d8f5c4d635d466246.gif",
-        }}
+        source={require("../../../assets/loader.gif")}
         style={{
-          height: "100%",
-          width: "100%",
+          flex: 1,
+          resizeMode: "cover",
         }}
       />
     </View>
@@ -21,9 +18,10 @@ const Loader = () => {
 export default Loader;
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    backgroundColor: "#FDD7E4",
-    alignSelf: "stretch",
-    textAlign: "center",
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    flexDirection: 'column',
   },
 });

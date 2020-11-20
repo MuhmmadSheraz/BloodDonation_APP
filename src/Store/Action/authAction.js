@@ -1,5 +1,6 @@
 const addUser = (userData) => {
-  console.log("userData fro Auth Action", userData);
+
+  console.log("userData fro Auth Action==============>", userData);
   return {
     type: "ADD_USER_TO_STORE",
     data: userData,
