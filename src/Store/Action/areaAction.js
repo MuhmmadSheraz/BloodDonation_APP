@@ -1,5 +1,6 @@
 export const addAreas = (areas) => {
-  console.log("Action Cal");
+
+  console.log("Action Area Cal========>",areas);
   return {
     type: "Store_Areas",
     data: areas,

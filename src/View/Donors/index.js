@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Button } from "native-base";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Location from "expo-location";
 
 import { connect } from "react-redux";
 import { showAreas } from "../../Config/utils";
@@ -20,7 +21,6 @@ import Loader from "../../Components/Loader";
 import { useIsFocused } from "@react-navigation/native";
 import { addAreas } from "../../Store/Action/areaAction";
 import { Picker } from "@react-native-community/picker";
-import { cos } from "react-native-reanimated";
 
 const Item = ({ Parentprops, item, user }) => (
   <View style={Styles.itemContainer}>
@@ -65,24 +65,31 @@ const Donors = (props) => {
   const [area, setArea] = useState("");
   const [isFilteredBlood, setIsFilteredBlood] = useState(false);
   const [isFilteredArea, setIsFilteredArea] = useState(false);
-
+  const [location, setLocation] = useState("");
   // const  = useIsFocused();
   const backAction = () => {
     props.navigation.navigate("Home");
   };
   useEffect(() => {
-    console.log(props.user.user);
     if (!props.user.user.userLocation) {
       alert("Please Update Your Location");
       return backAction();
     }
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location)
+      setLocation(location);
+    })();
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
     );
-    if (props.areas.length === 0) {
-      getAreas();
-    }
+    getAreas();
     sortDonors();
     return () => {
       backHandler.remove();
@@ -95,9 +102,10 @@ const Donors = (props) => {
 
   const getAreas = async () => {
     const data = await showAreas(
-      props.user.user.userLocation.latitude,
-      props.user.user.userLocation.longitude
+      location.coords.latitude,
+      location.coords.longitude
     );
+    console.log(data&&data)
     props.addAreas(data);
   };
 
@@ -108,7 +116,6 @@ const Donors = (props) => {
     donorsData &&
       donorsData.forEach((x) => {
         if (x.data().userName === props.user.user.userName) {
-          console.log(x.data())
           // continue;
         }
         let axisObj = {
@@ -369,7 +376,6 @@ const Styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  console.log(state.authReducer);
   return {
     user: state.authReducer,
     areas: state.areaReducer,
