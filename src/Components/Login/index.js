@@ -190,7 +190,7 @@ console.log("eroor",er)
                 {/* <Button title="Sign Up" onPress={signUpWithEmail} /> */}
               </View>
               <TouchableOpacity onPress={faceBookLogin}>
-                <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
+                <Text style={Styles.fbStyles}>Login With Facebook</Text>
               </TouchableOpacity>
 
                 <Text style={{ fontSize: 15, paddingTop: 20 }}>
@@ -238,10 +238,10 @@ console.log("eroor",er)
 
               <View style={Styles.authBtns}>
                 <TouchableOpacity onPress={faceBookLogin}>
-                  <Text style={Styles.fbStyles}>SignIn With Facebook</Text>
+                  <Text style={Styles.fbStyles}>Login With Facebook</Text>
                 </TouchableOpacity>
               </View>
-              {/* <Button title="SignIn With Facebook" onPress={faceBookLogin} /> */}
+              {/* <Button title="Login With FacebookFacebook" onPress={faceBookLogin} /> */}
               <TouchableOpacity>
                 <Text
                   style={{ fontSize: 15, paddingTop: 20, textAlign: "center" }}
@@ -345,21 +345,21 @@ const Styles = StyleSheet.create({
   authStyle: {
     color: "#fff",
     backgroundColor: "#f05454",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#fff",
     padding: 10,
-    borderRadius: 50,
+    borderRadius: 10,
     textAlign: "center",
     fontSize: 20,
     marginVertical: 5,
   },
   fbStyles: {
     color: "#fff",
-    backgroundColor: "#214252",
-    // borderWidth: 1,
-    borderColor: "#fff",
+    backgroundColor: "#1877f2",
+    borderWidth: 2,
+    borderColor: "#1877f2",
     padding: 10,
-    borderRadius: 50,
+    borderRadius: 10,
     textAlign: "center",
     fontSize: 20,
   },

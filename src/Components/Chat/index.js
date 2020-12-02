@@ -46,6 +46,7 @@ const Chat = (props) => {
               })
               .then(() => {
                 setTimeout(() => {
+                  console.log(array)
                   setAllChat(array);
                 }, 1000);
               });

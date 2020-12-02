@@ -21,14 +21,13 @@ import { connect } from "react-redux";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export function DrawerContent(props) {
-  const paperTheme = useTheme();
-
   const facebooklogout = () => {
     Facebook.logOutAsync();
     props.loggedOut();
     console.log("logout fun");
     props.navigation.navigate("Login");
   };
+  console.log(props.userInfo.user);
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -53,7 +52,11 @@ export function DrawerContent(props) {
                   <Title style={styles.title}>
                     {props.userInfo.user.userName}
                   </Title>
-                  <Caption style={styles.caption}>@j_doe</Caption>
+                  <Caption style={styles.caption}>
+                    {props.userInfo.user.bloodpicker
+                      ? props.userInfo.user.bloodpicker
+                      : ""}
+                  </Caption>
                 </View>
               </View>
             </View>
@@ -120,6 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userInfoSection: {
+    marginTop:45,
     paddingLeft: 20,
   },
   title: {

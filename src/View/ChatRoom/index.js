@@ -36,7 +36,7 @@ const ChatRoom = ({ navigation, route }) => {
 
   const sendMessageToFirebase = async () => {
     if (message === "") {
-      return console.log("Empty Message Found****");
+      return false;
     }
     var date = new Date();
     var timestamp = date.getTime();
@@ -109,7 +109,7 @@ const ChatRoom = ({ navigation, route }) => {
         <View style={Style.inputWrapper}>
           <TextInput
             value={message}
-            placeholder="Enter Your Message..."
+            placeholder="Type Something"
             style={Style.messageInput}
             onChangeText={(text) => setMessage(text)}
             required={true}
@@ -160,6 +160,7 @@ const Style = StyleSheet.create({
     borderWidth: 1,
     width: "100%",
     padding: 10,
+    paddingLeft: 15,
     borderRadius: 50,
   },
   wrapper: {

@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet, Linking } from "react-native";
 import { Button } from "native-base";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 const DonorDetails = (props) => {
   const [donorData, setDonorData] = useState([]);
@@ -35,63 +35,65 @@ const DonorDetails = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      {donorData && (
-        <View style={{ marginTop: 30 }}>
-          <TouchableOpacity
-            style={styles.imageWrapper}
-            onPress={() => alert("image clicked")}
-          >
-            <Image
-              source={{
-                uri: donorData.profilePicture,
-              }}
-              style={styles.avatar}
-            />
-          </TouchableOpacity>
-          {/* <View style={styles.imageWrapper}>
-            <Image
-              source={{
-                uri: donorData.profilePicture,
-              }}
-              style={styles.avatar}
-            />
-          </View> */}
-          <View>
-            <Text style={{ fontSize: 20, margin: 10 }}>
-              Name: {donorData.userName}
-            </Text>
-            <Text style={{ fontSize: 20, margin: 10 }}>
-              Blood Group: {donorData.bloodpicker}
-            </Text>
-            <Text style={{ fontSize: 20, margin: 10 }}>
-              Phone Number: {donorData.userPhoneNumber}
-            </Text>
-            <View style={{ margin: 10 }}>
-              <Button block info  onPress={() =>
-                  Linking.openURL(`tel:${donorData.userPhoneNumber}`)
-                }>
-              <Icon name="call-made" color={"#fff"} size={20} />
-                <Text style={{ color: "white" }}> Call Now</Text>
-              </Button >
-              {/* <Button
+    <ScrollView>
+      <View style={styles.container}>
+        {donorData && (
+          <View style={{ marginTop: 30 }}>
+            <TouchableOpacity
+              style={styles.imageWrapper}
+              onPress={() => alert("image clicked")}
+            >
+              <Image
+                source={{
+                  uri: donorData.profilePicture,
+                }}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
+
+            <View>
+              <Text style={styles.donorInfo}>
+                Name: <Text style={{fontWeight:"bold"}}>{donorData.userName}</Text>
+              </Text>
+              <Text style={styles.donorInfo}>
+                Blood Group: <Text style={{fontWeight:"bold"}} >{donorData.bloodpicker}</Text>
+              </Text>
+              <Text style={styles.donorInfo}>
+                Health Status: <Text style={{fontWeight:"bold"}}>{donorData.health}</Text>
+              </Text>
+              <Text style={styles.donorInfo}>
+                Phone Number: <Text style={{fontWeight:"bold"}}>{donorData.userPhoneNumber}</Text>
+              </Text>
+              <View style={{ margin: 10 }}>
+                <Button
+                  block
+                  info
+                  onPress={() =>
+                    Linking.openURL(`tel:${donorData.userPhoneNumber}`)
+                  }
+                >
+                  <Icon name="call-made" color={"#fff"} size={20} />
+                  <Text style={{ color: "white" }}> Call Now</Text>
+                </Button>
+                {/* <Button
                 title="Call Now"
                 onPress={() =>
                   Linking.openURL(`tel:${donorData.userPhoneNumber}`)
                 } */}
-              {/* /> */}
-            </View>
-            <View style={{ margin: 10 }}>
-              {/* <Button title="Chat Now" onPress={startChat} /> */}
-              <Button block success onPress={startChat} >
-                <Icon name="chat-outline" color={"#fff"} size={20} />
-                <Text style={{ color: "white" }}> Start Chat</Text>
-              </Button>
+                {/* /> */}
+              </View>
+              <View style={{ margin: 10 }}>
+                {/* <Button title="Chat Now" onPress={startChat} /> */}
+                <Button block success onPress={startChat}>
+                  <Icon name="chat-outline" color={"#fff"} size={20} />
+                  <Text style={{ color: "white" }}> Start Chat</Text>
+                </Button>
+              </View>
             </View>
           </View>
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
@@ -108,6 +110,14 @@ const styles = StyleSheet.create({
     width: 150,
     borderRadius: 80,
     marginRight: 10,
+  },
+  donorInfo: {
+    padding: 10,
+    paddingBottom: 18,
+    fontSize: 20,
+    borderBottomColor: "red",
+    borderBottomWidth: 2,
+    margin: 10,
   },
   imageWrapper: {
     flexDirection: "row",

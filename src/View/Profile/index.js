@@ -207,6 +207,7 @@ const Profile = (props) => {
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
+            
           }}
         >
           <View style={Styles.bg}>
@@ -328,7 +329,6 @@ const Styles = StyleSheet.create({
     borderRadius: 50,
   },
   textField: {
-    // height: 40,
     fontSize: 20,
     marginBottom: 20,
     marginTop: 20,
@@ -338,11 +338,6 @@ const Styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 1,
   },
-  // bg:{
-  //   // marginVertical:"30",
-  //   backgroundColor:"yellow",
-  //   height:"30"
-  // }
 });
 const mapStateToProps = (state) => {
   console.log("state  profile===>", state.authReducer);

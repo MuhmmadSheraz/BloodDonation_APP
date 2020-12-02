@@ -82,7 +82,7 @@ const Donors = (props) => {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      console.log(location)
+      console.log(location.coords.latitude);
       setLocation(location);
     })();
     const backHandler = BackHandler.addEventListener(
@@ -105,7 +105,7 @@ const Donors = (props) => {
       location.coords.latitude,
       location.coords.longitude
     );
-    console.log(data&&data)
+    console.log(data && data);
     props.addAreas(data);
   };
 
@@ -116,7 +116,7 @@ const Donors = (props) => {
     donorsData &&
       donorsData.forEach((x) => {
         if (x.data().userName === props.user.user.userName) {
-          // continue;
+          return 
         }
         let axisObj = {
           userLatitude:
@@ -169,6 +169,9 @@ const Donors = (props) => {
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
+        if (x.data().userName === props.user.user.userName) {
+          return;
+        }
         if (data.length === 0) {
           array.push(x.data());
         } else {
@@ -193,6 +196,9 @@ const Donors = (props) => {
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
+        if (x.data().userName === props.user.user.userName) {
+          return;
+        }
         if (blood === x.data().bloodpicker) {
           array.push(x.data());
         } else if (blood === "") {
@@ -224,6 +230,9 @@ const Donors = (props) => {
     const array = [];
     donorsData &&
       donorsData.forEach((x) => {
+        if (x.data().userName === props.user.user.userName) {
+          return 
+        }
         array.push(x.data());
       });
     setDonors(array);
@@ -235,6 +244,9 @@ const Donors = (props) => {
     const donorsData = await getAllDonors();
     donorsData &&
       donorsData.forEach((x) => {
+        if (x.data().userName === props.user.user.userName) {
+          return;
+        }
         if (data.length === 0) {
           array.push(x.data());
         } else {
